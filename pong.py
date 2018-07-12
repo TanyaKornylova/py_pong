@@ -37,13 +37,13 @@ pygame.display.set_caption('Ping-pong')
 def ball_init(up):
     global ball_pos, ball_vel # these are vectors stored as lists
     ball_pos = [WIDTH/2,HEIGHT/2]
-    horz = random.randrange(2,4)
-    vert = random.randrange(1,3)
+    horz = random.randrange(2,3)
+    vert = random.randrange(2,3)
     
-    if up == False:
-        horz = - horz
+    if up == True:
+        vert = - vert
         
-    ball_vel = [horz,-vert]
+    ball_vel = [horz, vert]
 
 # define event handlers
 def init():
@@ -69,7 +69,7 @@ def draw(canvas):
     pygame.draw.line(canvas, WHITE, [0, HEIGHT - PAD_HEIGHT],[WIDTH, HEIGHT - PAD_HEIGHT], 1)
     pygame.draw.circle(canvas, WHITE, [WIDTH//2, HEIGHT//2], 70, 1)
 
-    # update paddle's vertical position, keep paddle on the screen
+    # update paddle's horizontal position, keep paddle on the screen
     if paddle1_pos[0] > HALF_PAD_WIDTH and paddle1_pos[0] < WIDTH - HALF_PAD_WIDTH:
         paddle1_pos[0] += paddle1_vel
     elif paddle1_pos[0] == HALF_PAD_WIDTH and paddle1_vel > 0:
@@ -85,8 +85,8 @@ def draw(canvas):
         paddle2_pos[0] += paddle2_vel
 
     #update ball
-    ball_pos[0] += int(ball_vel[0])
-    ball_pos[1] += int(ball_vel[1])
+    ball_pos[0] += int(ball_vel[0]/2)
+    ball_pos[1] += int(ball_vel[1]/2)
 
     #draw paddles and ball
     pygame.draw.circle(canvas, RED, ball_pos, 20, 0)
@@ -117,11 +117,11 @@ def draw(canvas):
         ball_init(False)
 
     #update scores
-    myfont1 = pygame.font.SysFont("Comic Sans MS", 20)
+    myfont1 = pygame.font.SysFont("Boogaloo", 20)
     label1 = myfont1.render("Score "+str(l_score), 1, (255,255,0))
     canvas.blit(label1, (WIDTH/2 - 170,20))
 
-    myfont2 = pygame.font.SysFont("Comic Sans MS", 20)
+    myfont2 = pygame.font.SysFont("Boogaloo", 20)
     label2 = myfont2.render("Score "+str(r_score), 1, (255,255,0))
     canvas.blit(label2, (WIDTH/2 + 120, 20))  
     
@@ -130,22 +130,22 @@ def draw(canvas):
 def keydown(event):
     global paddle1_vel, paddle2_vel
     
-    if event.key == K_LEFT:
-        paddle2_vel = -4
-    elif event.key == K_RIGHT:
+    if event.key == K_RIGHT:
         paddle2_vel = 4
-    elif event.key == K_a:
-        paddle1_vel = -4
+    elif event.key == K_LEFT:
+        paddle2_vel = -4
     elif event.key == K_d:
         paddle1_vel = 4
+    elif event.key == K_a:
+        paddle1_vel = -4
 
 #keyup handler
 def keyup(event):
     global paddle1_vel, paddle2_vel
     
-    if event.key in (K_a, K_d):
+    if event.key in (K_d, K_a):
         paddle1_vel = 0
-    elif event.key in (K_LEFT, K_RIGHT):
+    elif event.key in (K_RIGHT, K_LEFT):
         paddle2_vel = 0
 
 init()
