@@ -3,6 +3,7 @@
 import random
 import socket
 import pygame, sys
+import Tkinter as tk
 from pygame.locals import *
 # -*- coding: utf-8 -*-
 
@@ -258,15 +259,34 @@ def connect_game(localIP):
 
     #print data
 #Starting window of online game
+root = tk.Tk()
+entry =tk.Entry(root)
+entry.pack()
+btn1 = tk.Button(root,                  
+             text="Create game",       
+             width=30,height=5,     
+             bg="white",fg="black") 
+btn1.bind("<Button-1>", create_game())       
+btn1.pack()  
+btn2 = Button(root,                  
+             text="Create game",       
+             width=30,height=5,     
+             bg="white",fg="black") 
+btn2.bind("<Button-2>", connect_game(entry.get()))       
+btn2.pack() 
+root.mainloop()
 
-if sys.argv[1] == 'cr':
+
+'''if sys.argv[1] == 'cr':
     create_game()
 elif sys.argv[1] == 'con':
     connect_game(sys.argv[2])
 else:
-    print ('Error! No input arguments')
+    print ('Error! No input arguments')'''
 
 #game loop
+
+
 '''while True:
 
     draw(window)
