@@ -2,13 +2,14 @@
 
 import random
 import pygame, sys
-import socket
+import socket,select
 from pygame.locals import *
 
 if sys.argv[1] == 'cr':
     sock = socket.socket()
     sock.bind(('', 9090))
     sock.listen(1)
+    #sock.setblocking(0)
     conn, addr = sock.accept()
 
     print 'connected:', addr
@@ -185,7 +186,14 @@ def events_check(partner):
         else: partner.send('n')
             
 def partner_check(partner):
-    data = partner.recv(1)
+    print "reading"
+    ready = select.select([partner], [], [], timeout_in_seconds)
+    if ready[0]:
+        data = partner.recv(1)
+    if not data:
+        print "no data gotten"
+        return
+    print "got"
     if data == 'r':
         paddle1_vel = 4
     elif data == 'l':
@@ -205,8 +213,11 @@ while True:
     i+=1;print i
     draw(window)
 
-    events_check(partner)
-    partner_check(partner)
-
+    try:
+        events_check(partner)
+    except: continue
+    try:
+        partner_check(partner)
+    except: continue
     pygame.display.update()
 fps.tick(60)
