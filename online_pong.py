@@ -182,26 +182,31 @@ def events_check(partner):
             partner.send('q')
             pygame.quit()
             sys.exit()
+        else: partner.send('n')
             
-
+def partner_check(partner):
+    data = partner.recv(1)
+    if data == 'r':
+        paddle1_vel = 4
+    elif data == 'l':
+        paddle1_vel = -4
+    elif data == 'u':
+        paddle1_vel = 0
+    elif data == 'q':
+        print "player leaved"
+        partner.close()
+    print data
 init()
 
 
-
+i = 0
 #game loop
 while True:
-
+    i+=1;print i
     draw(window)
 
-    for event in pygame.event.get():
+    events_check(partner)
+    partner_check(partner)
 
-        if event.type == KEYDOWN:
-            keydown(event)
-        elif event.type == KEYUP:
-            keyup(event)
-        elif event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-            
     pygame.display.update()
 fps.tick(60)
