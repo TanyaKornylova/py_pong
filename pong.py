@@ -1,6 +1,5 @@
 
 #PONG pygame
-import Tkinter as tk
 import random
 import socket
 import pygame, sys
@@ -167,34 +166,39 @@ def client_keyup():
 init()
 
 
-def create_game(): #если сервер
+def create_game():
+    print("creating game")
     sock = socket.socket()
     sock.bind(('', 9090))
     sock.listen(1)
-    conn, addr = sock.accept()
-
-    print 'connected:', addr
-
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                print "quit"
+                pygame.quit()
+                sys.exit()
+        try:
+            conn, addr = sock.accept()
+            print 'connected:', addr
+        except:
+            continue
+        break
     while True:
         data = conn.recv(1)
-        #if not data:
-        #    break
-        #conn.send(data.upper())
 
         draw(window)
 
-        if data == 'u': #клиентское "вверх"
-            client_up()
-        if data == 'd': #клиентское "вниз"
-            client_down()
-        if data == 'n': #клиентское "ничего"
-            client_keyup()
-        if data == 'q': #клиентский "выход"
-            conn.close()
-            break
-
         for event in pygame.event.get():
+            if data == 'u': #up
+                client_up()
+            if data == 'd': #down
+                client_down()
+            if data == 'n': #nothing
+                client_keyup()
+            if data == 'q': #quit
+                conn.close()
 
+            break
             if event.type == KEYDOWN:
                 server_keydown(event)
                 if event.key in (K_UP, K_w):
@@ -214,41 +218,38 @@ def create_game(): #если сервер
 
     conn.close()
 
-def connect_game(localIP): #если клиент
+def connect_game(localIP):
     sock = socket.socket()
     sock.connect((localIP, 9090))
-    #sock.send('hello, world!')
+
     while True:
         data = sock.recv(1)
-        #if not data:
-        #    break
-        #conn.send(data.upper())
 
         draw(window)
 
-        if data == 'u': #клиентское "вверх"
+        if data == 'u': #up
             client_up()
-        if data == 'd': #клиентское "вниз"
+        elif data == 'd': #down
             client_down()
-        if data == 'n': #клиентское "ничего"
+        elif data == 'n': #nothing
             client_keyup()
-        if data == 'q': #клиентский "выход"
+        elif data == 'q': #quit
             conn.close()
             break
 
         if event.type == KEYDOWN:
-                server_keydown(event)
-                if event.key in (K_UP, K_w):
-                    sock.send('u')
-                if event.key in (K_DOWN, K_s):
-                    sock.send('d')
-            elif event.type == KEYUP:
-                server_keyup(event)
-                sock.send('n')
-            elif event.type == QUIT:
-                sock.send('q')
-                pygame.quit()
-                sys.exit()
+            server_keydown(event)
+            if event.key in (K_UP, K_w):
+                sock.send('u')
+            if event.key in (K_DOWN, K_s):
+                sock.send('d')
+        elif event.type == KEYUP:
+            server_keyup(event)
+            sock.send('n')
+        elif event.type == QUIT:
+            sock.send('q')
+            pygame.quit()
+            sys.exit()
             
         pygame.display.update()
     fps.tick(60)
@@ -258,34 +259,15 @@ def connect_game(localIP): #если клиент
     #print data
 #Starting window of online game
 
+if sys.argv[1] == 'cr':
+    create_game()
+elif sys.argv[1] == 'con':
+    connect_game(sys.argv[2])
+else:
+    print ('Error! No input arguments')
 
-class Example(tk.Frame):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
-
-        # create a prompt, an input box, an output label,
-        # and a button to do the computation
-        self.prompt = tk.Label(self, text="Choose how to play:", anchor="w")
-        self.entry = tk.Entry(self)
-        self.createServer = tk.Button(self, text="Create a server", command = create_game)
-        self.joinServer = tk.Button(self, text="Join a server", command = connect_game(self.entry.get()))
-        self.output = tk.Label(self, text="")
-
-        # lay the widgets out on the screen. 
-        self.prompt.pack(side="top", fill="x")
-        self.entry.pack(side="top", fill="x", padx=20)
-        self.output.pack(side="top", fill="x", expand=True)
-        self.createServer.pack(side="right")
-        self.joinServer.pack(side="left")
-
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    Example(root).pack(fill="both", expand=True)
-    root.mainloop()
 #game loop
-while True:
+'''while True:
 
     draw(window)
 
@@ -299,7 +281,7 @@ while True:
             pygame.quit()
             sys.exit()
             
-    pygame.display.update()
+    pygame.display.update()'''
 
 
-Press h to open a hovercard with more details.
+#Press h to open a hovercard with more details.
