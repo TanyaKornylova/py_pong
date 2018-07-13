@@ -168,36 +168,32 @@ def keyup(event):
         paddle2_vel = 0
 
 def events_check(partner):
-    for event in pygame.event.get():
+    if pygame.event.get().count != 0:
+        for event in pygame.event.get():
 
-        if event.type == KEYDOWN:
-            keydown(event)
-            if event.key in (K_RIGHT, K_d):
-                partner.send('r')
-            elif event.key in (K_LEFT, K_a):
-                partner.send('l')
-        elif event.type == KEYUP:
-            keyup(event)
-            partner.send('u')
-        elif event.type == QUIT:
-            partner.send('q')
-            pygame.quit()
-            sys.exit()
-        else: partner.send('n')
+            if event.type == KEYDOWN:
+                keydown(event)
+                if event.key in (K_RIGHT, K_d):
+                    partner.send('r')
+                elif event.key in (K_LEFT, K_a):
+                 partner.send('l')
+            elif event.type == KEYUP:
+                keyup(event)
+                partner.send('u')
+            elif event.type == QUIT:
+                partner.send('q')
+                pygame.quit()
+                sys.exit()
+    else: partner.send('n')
             
 def partner_check(partner):
     print "reading"
-    ready = select.select([partner], [], [], timeout_in_seconds)
-    if ready[0]:
-        data = partner.recv(1)
-    if not data:
-        print "no data gotten"
-        return
+    data = partner.recv(1)
     print "got"
     if data == 'r':
         paddle1_vel = 4
     elif data == 'l':
-        paddle1_vel = -4
+        paddle1_veпакет beamer.l = -4
     elif data == 'u':
         paddle1_vel = 0
     elif data == 'q':
@@ -213,11 +209,8 @@ while True:
     i+=1;print i
     draw(window)
 
-    try:
-        events_check(partner)
-    except: continue
-    try:
-        partner_check(partner)
-    except: continue
+    events_check(partner)
+    partner_check(partner)
+
     pygame.display.update()
 fps.tick(60)
