@@ -193,7 +193,7 @@ def partner_check(partner):
     if data == 'r':
         paddle1_vel = 4
     elif data == 'l':
-        paddle1_veпакет beamer.l = -4
+        paddle1_vel = -4
     elif data == 'u':
         paddle1_vel = 0
     elif data == 'q':
